@@ -1,13 +1,22 @@
 <?php
+
+/**
+ * @file
+ */
+
 /**
  * Implements hook_cron().
  *
  * Recalculate results for any entities that have gotten votes since the last
  * run.
+ */use Drupal\Core\Form\FormStateInterface;
+
+/**
+ *
  */
 function votingapi_queue_cron() {
   if (Drupal::config('votingapi.settings')
-      ->get('calculation_schedule') == 'manual'
+    ->get('calculation_schedule') == 'manual'
   ) {
     $state = Drupal::state();
     $config = Drupal::config('votingapi.settings');
@@ -20,11 +29,12 @@ function votingapi_queue_cron() {
     // process, get the next page of items.
     if ($next_page) {
       $start = $limit * $next_page;
-    } else {
+    }
+    else {
       $start = 0;
     }
 
-    // try to get at least one more item in order to see if there is more left
+    // Try to get at least one more item in order to see if there is more left
     // to process.
     $results = votingapi_queue_get_votes_since_moment($limit + 1, $start);
 
@@ -42,7 +52,8 @@ function votingapi_queue_cron() {
     if ($more_items_to_process) {
       $next_page++;
       $state->set('votingapi.queue_next_page', $next_page);
-    } else {
+    }
+    else {
       $state->delete('votingapi.queue_next_page');
       $state->set('votingapi.queue_last_cron', REQUEST_TIME);
     }
@@ -52,11 +63,14 @@ function votingapi_queue_cron() {
 /**
  * Returns a list of voted entities since last run.
  *
- * @param int $limit maximum entries to be returned
- * @param int $range_start offset
+ * @param int $limit
+ *   maximum entries to be returned.
+ * @param int $range_start
+ *   offset.
+ *
  * @return array
  */
-function votingapi_queue_get_votes_since_moment($limit=100, $range_start=0) {
+function votingapi_queue_get_votes_since_moment($limit = 100, $range_start = 0) {
   $last_cron = \Drupal::state()->get('votingapi.queue_last_cron', 0);
   return \Drupal::entityQueryAggregate('vote')
     ->condition('timestamp', $last_cron, '>')
@@ -73,11 +87,13 @@ function votingapi_queue_get_votes_since_moment($limit=100, $range_start=0) {
  * @param $entity_type_id
  * @param $entity_id
  * @param $vote_type
+ *
  * @return
  *   A unique ID if the item was successfully created and was (best effort)
  *   added to the queue, otherwise FALSE. We don't guarantee the item was
  *   committed to disk etc, but as far as we know, the item is now in the
  *   queue.
+ *
  * @see \Drupal\Core\Queue\QueueInterface::createItem()
  */
 function votingapi_queue_add($entity_type_id, $entity_id, $vote_type) {
@@ -99,7 +115,7 @@ function votingapi_queue_add($entity_type_id, $entity_id, $vote_type) {
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  * @param string $form_id
  */
-function votingapi_queue_form_votingapi_settings_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+function votingapi_queue_form_votingapi_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
   $config = Drupal::config('votingapi.settings');
   $limit = $config->get('queue_cron_limit');
   if (!$limit) {
@@ -120,8 +136,8 @@ function votingapi_queue_form_votingapi_settings_alter(&$form, \Drupal\Core\Form
  * @param array $form
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  */
-function votingapi_queue_settings_submit(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
-    $config = Drupal::configFactory()->getEditable('votingapi.settings');
-    $config->set('queue_cron_limit', $form_state->getValue('queue_cron_limit', 1000));
-    $config->save();
+function votingapi_queue_settings_submit(array &$form, FormStateInterface $form_state) {
+  $config = Drupal::configFactory()->getEditable('votingapi.settings');
+  $config->set('queue_cron_limit', $form_state->getValue('queue_cron_limit', 1000));
+  $config->save();
 }

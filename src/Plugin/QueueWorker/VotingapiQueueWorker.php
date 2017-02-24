@@ -1,9 +1,9 @@
 <?php
 
 namespace Drupal\votingapi_queue\Plugin\QueueWorker;
+
 use Drupal\Core\Cache\Cache;
 use \Drupal\Core\Queue\QueueWorkerBase;
-use Drupal\votingapi\VoteResultFunctionManager;
 
 /**
  * The RenderWorker implementation class.
@@ -31,4 +31,5 @@ class VotingapiQueueWorker extends QueueWorkerBase {
     $cache_tag = $data['entity_type'] . ':' . $data['entity_id'];
     Cache::invalidateTags([$cache_tag]);
   }
+
 }

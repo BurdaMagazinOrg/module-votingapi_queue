@@ -25,8 +25,8 @@ function votingapi_queue_drush_command() {
     'description' => dt('Sets the last executed cron time.'),
     'core' => ['8+'],
     'arguments' => [
-      'timestamp' => dt('The timestamp (integer) to be set. Pass string FALSE to unset the time.')
-    ]
+      'timestamp' => dt('The timestamp (integer) to be set. Pass string FALSE to unset the time.'),
+    ],
   ];
   $commands['votingapi-queue-debug'] = [
     'description' => dt('Prints some health and debug info. Containing last execution timestamp and page.'),
@@ -84,6 +84,9 @@ function _votingapi_queue_process_next_item(QueueInterface $queue, QueueWorkerIn
   }
 }
 
+/**
+ *
+ */
 function drush_votingapi_queue_set_last_cron_time($timestamp) {
   $state = Drupal::state();
   if (strtoupper($timestamp) == 'FALSE') {
@@ -91,7 +94,8 @@ function drush_votingapi_queue_set_last_cron_time($timestamp) {
     drush_print(dt("Deleted votingapi.queue_next_page."));
     $state->delete('votingapi.queue_last_cron');
     drush_print(dt("Deleted votingapi.queue_last_cron."));
-  } else {
+  }
+  else {
     $state->delete('votingapi.queue_next_page');
     drush_print(dt("Deleted votingapi.queue_next_page."));
     $state->set('votingapi.queue_last_cron', $timestamp);
@@ -100,11 +104,15 @@ function drush_votingapi_queue_set_last_cron_time($timestamp) {
 
 }
 
+/**
+ *
+ */
 function drush_votingapi_queue_set_last_cron_time_validate() {
   $args_count = func_num_args();
   if ($args_count == 0) {
     return drush_set_error('ARGUMENTS_REQUIRED', dt('Please provide timestamp or FALSE as argument.'));
-  } else {
+  }
+  else {
     $timestamp = func_get_arg(0);
   }
 
@@ -116,6 +124,9 @@ function drush_votingapi_queue_set_last_cron_time_validate() {
   }
 }
 
+/**
+ *
+ */
 function drush_votingapi_queue_debug() {
   $state = Drupal::state();
   drush_print("votingapi.queue_last_cron:" . $state->get('votingapi.queue_last_cron'));
