@@ -3,4 +3,4 @@ votingapi.settings.queue_add_limit:
   label: 'Maximum number of entries to be added to queue for each cron run.'
 votingapi.settings.queue_cron_populate:
   type: boolean
-  label: 'Enabled or disables the population of voting api queue on cron run.'
+  label: 'Enables or disables the population of voting api queue on cron run.'
