@@ -6,11 +6,11 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Queue\QueueWorkerBase;
 
 /**
- * The RenderWorker implementation class.
+ * The VotingAPI implementation class.
  *
  * @QueueWorker(
  *   id = "votingapi_queue",
- *   title = @Translation("Render queue")
+ *   title = @Translation("VotingAPI queue")
  * )
  */
 class VotingapiQueueWorker extends QueueWorkerBase {
