@@ -19,7 +19,7 @@ class VotingapiQueueWorker extends QueueWorkerBase {
    * {@inheritdoc}
    */
   public function processItem($data) {
-    /**
+    /*
      * @var VoteResultFunctionManager $manager
      */
     $manager = \Drupal::service('plugin.manager.votingapi.resultfunction');

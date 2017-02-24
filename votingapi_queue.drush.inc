@@ -85,7 +85,10 @@ function _votingapi_queue_process_next_item(QueueInterface $queue, QueueWorkerIn
 }
 
 /**
+ * Sets or resets the last run queue cron time and next page.
  *
+ * @param string|int $timestamp
+ *   string containing FALSE or unix timestamp as integer.
  */
 function drush_votingapi_queue_set_last_cron_time($timestamp) {
   $state = Drupal::state();
@@ -105,7 +108,9 @@ function drush_votingapi_queue_set_last_cron_time($timestamp) {
 }
 
 /**
+ * Validation function to check parameters.
  *
+ * @see drush_votingapi_queue_set_last_cron_time()
  */
 function drush_votingapi_queue_set_last_cron_time_validate() {
   $args_count = func_num_args();
@@ -125,7 +130,7 @@ function drush_votingapi_queue_set_last_cron_time_validate() {
 }
 
 /**
- *
+ * Displays debug / health information about the votingapi.
  */
 function drush_votingapi_queue_debug() {
   $state = Drupal::state();
