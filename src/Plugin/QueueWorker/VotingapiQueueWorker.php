@@ -3,7 +3,7 @@
 namespace Drupal\votingapi_queue\Plugin\QueueWorker;
 
 use Drupal\Core\Cache\Cache;
-use \Drupal\Core\Queue\QueueWorkerBase;
+use Drupal\Core\Queue\QueueWorkerBase;
 
 /**
  * The RenderWorker implementation class.
@@ -14,6 +14,8 @@ use \Drupal\Core\Queue\QueueWorkerBase;
  * )
  */
 class VotingapiQueueWorker extends QueueWorkerBase {
+
+  const DEFAULT_ADD_LIMIT = 1000;
 
   /**
    * {@inheritdoc}

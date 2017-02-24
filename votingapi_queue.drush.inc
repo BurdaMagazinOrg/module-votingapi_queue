@@ -5,8 +5,8 @@
  * Drush commands for votingapi_queue.
  */
 
-use \Drupal\Core\Queue\QueueInterface;
-use \Drupal\Core\Queue\QueueWorkerInterface;
+use Drupal\Core\Queue\QueueInterface;
+use Drupal\Core\Queue\QueueWorkerInterface;
 
 /**
  * Implements hook_drush_command().

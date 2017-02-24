@@ -5,4 +5,4 @@ package: Voting
 core: 8.x
 configure: votingapi.admin_settings
 dependencies:
-  - votingapi
+  - drupal:votingapi

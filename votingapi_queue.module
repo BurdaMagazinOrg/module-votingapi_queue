@@ -5,9 +5,10 @@
  * Contains votingapi_queue module.
  */
 
-use Drupal\Core\Form\FormStateInterface;
+namespace Drupal\votingapi_queue;
 
-define('VOTINGAPI_QUEUE_DEFAULT_ADD_LIMIT', 1000);
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\votingapi_queue\Plugin\QueueWorker\VotingapiQueueWorker;
 
 /**
  * Implements hook_cron().
@@ -22,7 +23,7 @@ function votingapi_queue_cron() {
   ) {
     $limit = $config->get('queue_add_limit');
     if (!$limit) {
-      $limit = VOTINGAPI_QUEUE_DEFAULT_ADD_LIMIT;
+      $limit = VotingapiQueueWorker::DEFAULT_ADD_LIMIT;
     }
     _votingapi_queue_populate($limit);
   }
@@ -144,7 +145,7 @@ function votingapi_queue_form_votingapi_settings_alter(&$form, FormStateInterfac
   $config = Drupal::config('votingapi.settings');
   $limit = $config->get('queue_add_limit');
   if (!$limit) {
-    $limit = VOTINGAPI_QUEUE_DEFAULT_ADD_LIMIT;
+    $limit = VotingapiQueueWorker::DEFAULT_ADD_LIMIT;
   }
   $form['queue_add_limit'] = [
     '#type' => 'number',
@@ -170,7 +171,7 @@ function votingapi_queue_form_votingapi_settings_alter(&$form, FormStateInterfac
  */
 function votingapi_queue_settings_submit(array &$form, FormStateInterface $form_state) {
   $config = Drupal::configFactory()->getEditable('votingapi.settings');
-  $config->set('queue_add_limit', $form_state->getValue('queue_add_limit', VOTINGAPI_QUEUE_DEFAULT_ADD_LIMIT));
+  $config->set('queue_add_limit', $form_state->getValue('queue_add_limit', VotingapiQueueWorker::DEFAULT_ADD_LIMIT));
   $config->set('queue_cron_populate', $form_state->getValue('queue_cron_populate', TRUE));
   $config->save();
 }
