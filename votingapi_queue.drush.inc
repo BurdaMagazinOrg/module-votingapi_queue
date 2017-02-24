@@ -28,8 +28,8 @@ function votingapi_queue_drush_command() {
       'limit' => dt('The maximum amount to be processed in one run. (optional)'),
     ],
   ];
-  $commands['votingapi-queue-set-last-cron-time'] = [
-    'description' => dt('Sets the last executed cron time.'),
+  $commands['votingapi-queue-set-last-run-time'] = [
+    'description' => dt('Sets the last executed run time.'),
     'core' => ['8+'],
     'arguments' => [
       'timestamp' => dt('The timestamp (integer) to be set. Pass string FALSE to unset the time.'),
@@ -113,7 +113,7 @@ function drush_votingapi_queue_populate($limit = FALSE) {
  * @param string|int $timestamp
  *   string containing FALSE or unix timestamp as integer.
  */
-function drush_votingapi_queue_set_last_cron_time($timestamp) {
+function drush_votingapi_queue_set_last_run_time($timestamp) {
   $state = Drupal::state();
   if (strtoupper($timestamp) == 'FALSE') {
     $state->delete('votingapi.queue_next_page');
@@ -132,9 +132,9 @@ function drush_votingapi_queue_set_last_cron_time($timestamp) {
 /**
  * Validation function to check parameters.
  *
- * @see drush_votingapi_queue_set_last_cron_time()
+ * @see drush_votingapi_queue_set_last_run_time()
  */
-function drush_votingapi_queue_set_last_cron_time_validate() {
+function drush_votingapi_queue_set_last_run_time_validate() {
   $args_count = func_num_args();
   if ($args_count == 0) {
     return drush_set_error('ARGUMENTS_REQUIRED', dt('Please provide timestamp or FALSE as argument.'));
