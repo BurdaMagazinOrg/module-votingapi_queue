@@ -98,7 +98,7 @@ function _votingapi_queue_process_next_item(QueueInterface $queue, QueueWorkerIn
  *   Maximum items to be processed or FALSE for every available item.
  */
 function drush_votingapi_queue_populate($limit = FALSE) {
-  if ($limit) {
+  if (FALSE === $limit) {
     drush_print(dt("Adding all available items for processing."));
   }
   else {

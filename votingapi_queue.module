@@ -61,14 +61,14 @@ function _votingapi_queue_populate($limit) {
     $results = votingapi_queue_get_votes_since_moment($limit + 1, $start);
 
     $more_items_to_process = FALSE;
-    $i = 0;
+    $i = 1;
     foreach ($results as $result) {
-      votingapi_queue_add($result['entity_type'], $result['entity_id'], $result['type']);
-      $i++;
       if ($i > $limit) {
         $more_items_to_process = TRUE;
         break;
       }
+      votingapi_queue_add($result['entity_type'], $result['entity_id'], $result['type']);
+      $i++;
     }
 
     if ($more_items_to_process) {
