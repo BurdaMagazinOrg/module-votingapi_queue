@@ -5,8 +5,6 @@
  * Contains votingapi_queue module.
  */
 
-namespace Drupal\votingapi_queue;
-
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\votingapi_queue\Plugin\QueueWorker\VotingapiQueueWorker;
 
