@@ -7,6 +7,8 @@
 
 use Drupal\Core\Form\FormStateInterface;
 
+define('VOTINGAPI_QUEUE_DEFAULT_ADD_LIMIT', 1000);
+
 /**
  * Implements hook_cron().
  *
@@ -14,14 +16,14 @@ use Drupal\Core\Form\FormStateInterface;
  * run.
  */
 function votingapi_queue_cron() {
-  if (Drupal::config('votingapi.settings')
-    ->get('calculation_schedule') == 'manual'
+  $config = Drupal::config('votingapi.settings');
+  if ($config->get('calculation_schedule') == 'manual'
+    && $config->get('queue_cron_populate')
   ) {
     $state = Drupal::state();
-    $config = Drupal::config('votingapi.settings');
-    $limit = $config->get('queue_cron_limit');
+    $limit = $config->get('queue_add_limit');
     if (!$limit) {
-      $limit = 1000;
+      $limit = VOTINGAPI_QUEUE_DEFAULT_ADD_LIMIT;
     }
     $next_page = $state->get('votingapi.queue_next_page', 0);
     // Check if the last cron was able to add all items. If items are left to be
@@ -117,15 +119,20 @@ function votingapi_queue_add($entity_type_id, $entity_id, $vote_type) {
  */
 function votingapi_queue_form_votingapi_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
   $config = Drupal::config('votingapi.settings');
-  $limit = $config->get('queue_cron_limit');
+  $limit = $config->get('queue_add_limit');
   if (!$limit) {
-    $limit = 1000;
+    $limit = VOTINGAPI_QUEUE_DEFAULT_ADD_LIMIT;
   }
-  $form['queue_cron_limit'] = [
+  $form['queue_add_limit'] = [
     '#type' => 'number',
-    '#title' => t('Maximum number of entries to be added to queue for each cron run.'),
-    '#default_value' => $form_state->getValue('queue_cron_limit', $limit),
+    '#title' => t('Maximum number of entries to be added to queue for each run.'),
+    '#default_value' => $form_state->getValue('queue_add_limit', $limit),
     '#min' => 1,
+  ];
+  $form['queue_cron_populate'] = [
+    '#type' => 'checkbox',
+    '#title' => t("Add votingapi queue entries on cron (there is a drush alternative available)."),
+    '#default_value' => $form_state->getValue('queue_cron_populate', TRUE),
   ];
   $form['#submit'][] = 'votingapi_queue_settings_submit';
 }
@@ -140,6 +147,7 @@ function votingapi_queue_form_votingapi_settings_alter(&$form, FormStateInterfac
  */
 function votingapi_queue_settings_submit(array &$form, FormStateInterface $form_state) {
   $config = Drupal::configFactory()->getEditable('votingapi.settings');
-  $config->set('queue_cron_limit', $form_state->getValue('queue_cron_limit', 1000));
+  $config->set('queue_add_limit', $form_state->getValue('queue_add_limit', VOTINGAPI_QUEUE_DEFAULT_ADD_LIMIT));
+  $config->set('queue_cron_populate', $form_state->getValue('queue_cron_populate', TRUE));
   $config->save();
 }
