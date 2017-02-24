@@ -20,11 +20,32 @@ function votingapi_queue_cron() {
   if ($config->get('calculation_schedule') == 'manual'
     && $config->get('queue_cron_populate')
   ) {
-    $state = Drupal::state();
     $limit = $config->get('queue_add_limit');
     if (!$limit) {
       $limit = VOTINGAPI_QUEUE_DEFAULT_ADD_LIMIT;
     }
+    _votingapi_queue_populate($limit);
+  }
+}
+
+/**
+ * Adds items for processing to votingapi queue.
+ *
+ * @param int|false $limit
+ *   Maximum entries to be added in one run. If false is passed all items
+ *   available will be added.
+ */
+function _votingapi_queue_populate($limit) {
+  $state = Drupal::state();
+  if (FALSE === $limit) {
+    $results = votingapi_queue_get_votes_since_moment(FALSE);
+    foreach ($results as $result) {
+      votingapi_queue_add($result['entity_type'], $result['entity_id'], $result['type']);
+    }
+    $state->delete('votingapi.queue_next_page');
+    $state->set('votingapi.queue_last_run', REQUEST_TIME);
+  }
+  else {
     $next_page = $state->get('votingapi.queue_next_page', 0);
     // Check if the last cron was able to add all items. If items are left to be
     // process, get the next page of items.
@@ -56,7 +77,7 @@ function votingapi_queue_cron() {
     }
     else {
       $state->delete('votingapi.queue_next_page');
-      $state->set('votingapi.queue_last_cron', REQUEST_TIME);
+      $state->set('votingapi.queue_last_run', REQUEST_TIME);
     }
   }
 }
@@ -64,8 +85,8 @@ function votingapi_queue_cron() {
 /**
  * Returns a list of voted entities since last run.
  *
- * @param int $limit
- *   Maximum entries to be returned.
+ * @param int|false $limit
+ *   Maximum entries to be returned. If false all items will be returned.
  * @param int $range_start
  *   Offset.
  *
@@ -74,14 +95,16 @@ function votingapi_queue_cron() {
  *   results are returned.
  */
 function votingapi_queue_get_votes_since_moment($limit = 100, $range_start = 0) {
-  $last_cron = \Drupal::state()->get('votingapi.queue_last_cron', 0);
-  return \Drupal::entityQueryAggregate('vote')
+  $last_cron = \Drupal::state()->get('votingapi.queue_last_run', 0);
+  $entity_query = \Drupal::entityQueryAggregate('vote')
     ->condition('timestamp', $last_cron, '>')
-    ->range($range_start, $limit)
     ->groupBy('entity_type')
     ->groupBy('entity_id')
-    ->groupBy('type')
-    ->execute();
+    ->groupBy('type');
+  if (FALSE !== $limit) {
+    $entity_query->range($range_start, $limit);
+  }
+  return $entity_query->execute();
 }
 
 /**

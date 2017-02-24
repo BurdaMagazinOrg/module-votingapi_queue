@@ -21,6 +21,13 @@ function votingapi_queue_drush_command() {
       'time-limit' => dt('The time limit. Default is set to value 0, which is unlimited.'),
     ],
   ];
+  $commands['votingapi-queue-populate'] = [
+    'description' => dt('Populate the votingapi queue with items for processing..'),
+    'core' => ['8+'],
+    'arguments' => [
+      'limit' => dt('The maximum amount to be processed in one run. (optional)'),
+    ],
+  ];
   $commands['votingapi-queue-set-last-cron-time'] = [
     'description' => dt('Sets the last executed cron time.'),
     'core' => ['8+'],
@@ -85,6 +92,22 @@ function _votingapi_queue_process_next_item(QueueInterface $queue, QueueWorkerIn
 }
 
 /**
+ * Adds items to queue.
+ *
+ * @param int|false $limit
+ *   Maximum items to be processed or FALSE for every available item.
+ */
+function drush_votingapi_queue_populate($limit = FALSE) {
+  if ($limit) {
+    drush_print(dt("Adding all available items for processing."));
+  }
+  else {
+    drush_print(dt("Adding $limit items for processing."));
+  }
+  _votingapi_queue_populate($limit);
+}
+
+/**
  * Sets or resets the last run queue cron time and next page.
  *
  * @param string|int $timestamp
@@ -95,16 +118,15 @@ function drush_votingapi_queue_set_last_cron_time($timestamp) {
   if (strtoupper($timestamp) == 'FALSE') {
     $state->delete('votingapi.queue_next_page');
     drush_print(dt("Deleted votingapi.queue_next_page."));
-    $state->delete('votingapi.queue_last_cron');
-    drush_print(dt("Deleted votingapi.queue_last_cron."));
+    $state->delete('votingapi.queue_last_run');
+    drush_print(dt("Deleted votingapi.queue_last_run."));
   }
   else {
     $state->delete('votingapi.queue_next_page');
     drush_print(dt("Deleted votingapi.queue_next_page."));
-    $state->set('votingapi.queue_last_cron', $timestamp);
-    drush_print(dt("set votingapi.queue_last_cron to $timestamp"));
+    $state->set('votingapi.queue_last_run', $timestamp);
+    drush_print(dt("set votingapi.queue_last_run to $timestamp"));
   }
-
 }
 
 /**
@@ -134,6 +156,6 @@ function drush_votingapi_queue_set_last_cron_time_validate() {
  */
 function drush_votingapi_queue_debug() {
   $state = Drupal::state();
-  drush_print("votingapi.queue_last_cron:" . $state->get('votingapi.queue_last_cron'));
+  drush_print("votingapi.queue_last_run:" . $state->get('votingapi.queue_last_run'));
   drush_print("votingapi.queue_next_page:" . $state->get('votingapi.queue_next_page'));
 }
