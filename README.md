@@ -1,6 +1,9 @@
-# Votingapi Queue
+# VotingAPI Queue
 
-This module provides a queue for updating voted entites. The configuration hooks into the default votingapi settings page. Choose manual on "tally results" settings. Additional settings for batch size and cron execution are available.
+This module provides a queue for updating voted entites. The configuration
+hooks into the default votingapi settings page. Choose manual on "tally
+results" settings. Additional settings for batch size and cron execution
+are available.
 
 # Available Drush commands
 
