@@ -8,16 +8,16 @@ This module provides a queue for updating voted entites. The configuration hooks
 
 Start a new worker:
 
-```~$ votingapi-queue-run```
+```~$ drush votingapi-queue-run```
 
 Populate queue:
 
-```~$ votingapi-queue-populate```
+```~$ drush votingapi-queue-populate```
 
 Reset:
 
-```~$ votingapi-queue-set-last-run-time FALSE```
+```~$ drush votingapi-queue-set-last-run-time FALSE```
 
 Debug/ Info:
 
-```~$ votingapi-queue-debug```
+```~$ drush votingapi-queue-debug```
