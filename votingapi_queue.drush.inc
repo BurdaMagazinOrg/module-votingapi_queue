@@ -19,6 +19,7 @@ function votingapi_queue_drush_command() {
     'core' => ['8+'],
     'options' => [
       'time-limit' => dt('The time limit. Default is set to value 0, which is unlimited.'),
+      'run-once' => dt('If passed terminates once queue is empty. Time limit is ignored.'),
     ],
   ];
   $commands['votingapi-queue-populate'] = [
@@ -48,6 +49,7 @@ function votingapi_queue_drush_command() {
  */
 function drush_votingapi_queue_run() {
   $time_limit = drush_get_option('time-limit', 0);
+  $run_once = drush_get_option('run-once', 0);
   $queue = \Drupal::queue('votingapi_queue');
   $queue_worker = \Drupal::service('plugin.manager.queue_worker')
     ->createInstance('votingapi_queue');
@@ -55,12 +57,18 @@ function drush_votingapi_queue_run() {
   if ($time_limit) {
     $end = time() + $time_limit;
     while (time() < $end) {
-      _votingapi_queue_process_next_item($queue, $queue_worker, $time_limit);
+      $status = _votingapi_queue_process_next_item($queue, $queue_worker, $time_limit);
+      if (!$status && $run_once) {
+        break;
+      }
     }
   }
   else {
     while (TRUE) {
-      _votingapi_queue_process_next_item($queue, $queue_worker);
+      $status =_votingapi_queue_process_next_item($queue, $queue_worker);
+      if (!$status && $run_once) {
+        break;
+      }
     }
   }
 
@@ -81,6 +89,7 @@ function _votingapi_queue_process_next_item(QueueInterface $queue, QueueWorkerIn
       // no matter whether it has been processed successfully.
       $queue->deleteItem($item);
       $queue_worker->processItem($item->data);
+      return TRUE;
     }
     catch (\Exception $e) {
       watchdog_exception('cron', $e);
@@ -88,6 +97,7 @@ function _votingapi_queue_process_next_item(QueueInterface $queue, QueueWorkerIn
   }
   else {
     sleep(1);
+    return FALSE;
   }
 }
 
