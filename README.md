@@ -29,7 +29,22 @@ Add some buffer time to avoid accidentally having too many workers run at
 the same time - there's no semaphore being used so you can have multiple
 workers run at the same time.
 
-Some examples (time limit is in seconds):
+## Population examples:
+
+The easiest way to populate items for processing is to enable
+`queue_cron_populate` on votingapi settings form. If you don't want to
+keep your cron lean / separate the population from the normal cron run
+you can add a custom cron to trigger drush population:
+
+Add all available items for processing:
+    
+    ~$ drush votingapi-queue-populate
+
+Add maximum 1000 items for each run for processing:
+
+    ~$ drush votingapi-queue-populate --limit=100
+
+## Worker examples (time limit is in seconds):
 
 For a cronjob that runs every minute and goal is immediate processing:
     
