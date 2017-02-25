@@ -65,7 +65,7 @@ function drush_votingapi_queue_run() {
   }
   else {
     while (TRUE) {
-      $status =_votingapi_queue_process_next_item($queue, $queue_worker);
+      $status = _votingapi_queue_process_next_item($queue, $queue_worker);
       if (!$status && $run_once) {
         break;
       }
