@@ -72,7 +72,7 @@ function drush_votingapi_queue_run() {
     }
   }
 
-  drush_print("Finished votingapi queue run.");
+  drush_print(dt("Finished votingapi queue run."));
 }
 
 /**
@@ -112,7 +112,7 @@ function drush_votingapi_queue_populate($limit = FALSE) {
     drush_print(dt("Adding all available items for processing."));
   }
   else {
-    drush_print(dt("Adding $limit items for processing."));
+    drush_print(dt("Adding @limit items for processing.", ['@limit' => $limit]));
   }
   _votingapi_queue_populate($limit);
 }
@@ -166,6 +166,14 @@ function drush_votingapi_queue_set_last_run_time_validate() {
  */
 function drush_votingapi_queue_debug() {
   $state = Drupal::state();
-  drush_print("votingapi.queue_last_run:" . $state->get('votingapi.queue_last_run'));
-  drush_print("votingapi.queue_next_page:" . $state->get('votingapi.queue_next_page'));
+  drush_print(dt(
+    "votingapi.queue_last_run: @value", [
+      '@value' => $state->get('votingapi.queue_last_run'),
+    ]
+  ));
+  drush_print(dt(
+    "votingapi.queue_next_page: @value", [
+      '@value' => $state->get('votingapi.queue_next_page'),
+    ]
+  ));
 }
